@@ -8,6 +8,10 @@ In this tutorial you will also have a small trip to know Cloud service(Alibaba c
 
 I will create all from the very beginning.
 
+## CI-CD Architeture
+
+![cicd-architecture](./cicd_architecture.png)
+
 ## Functional systems
 
 - Github ---- code and helm charts repository
