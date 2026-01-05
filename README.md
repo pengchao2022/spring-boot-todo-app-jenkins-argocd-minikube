@@ -150,6 +150,14 @@ I will create all from the very beginning.
 
   - 1.0.0.30	Build Number	The 30th build (specific version)
 
+- I have also set up the email notification, When the jenkins finished the CI
+  (since I don't have slack or sth then just use email instead)
+
+  ![email1](./email1.png)
+
+  ![email2](./email2.png)
+
+  
 
 
 
