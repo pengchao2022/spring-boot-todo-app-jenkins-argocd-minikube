@@ -298,7 +298,7 @@ pipeline {
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 Spring Boot Todo App CI/CD</h1>
+            <h1>🚀 Spring Boot Todo App CI</h1>
             <p>Build Notification - #${BUILD_NUMBER}</p>
         </div>
         
@@ -400,7 +400,7 @@ docker run -d -p 8080:8080 --name todo-app-latest ${IMAGE_LATEST}</pre>
         </div>
         
         <div class="footer">
-            <p>This is an automated message from Jenkins CI/CD Pipeline.</p>
+            <p>This is an automated message from Jenkins CI Pipeline.</p>
             <p>Jenkins URL: ${env.JENKINS_URL ?: 'Not configured'}</p>
             <p>© ${new Date().format('yyyy')} Spring Boot Todo App Team | Sent at: ${new Date().format("yyyy-MM-dd HH:mm:ss z")}</p>
         </div>
@@ -414,7 +414,7 @@ docker run -d -p 8080:8080 --name todo-app-latest ${IMAGE_LATEST}</pre>
                         mimeType: "text/html"
                     )
                     
-                    echo "✅ Email notification sent successfully to ${EMAIL_RECIPIENTS}"
+                    echo "Email notification sent successfully to ${EMAIL_RECIPIENTS}"
                 }
             }
         }
@@ -423,7 +423,7 @@ docker run -d -p 8080:8080 --name todo-app-latest ${IMAGE_LATEST}</pre>
     post {
         success {
             echo ""
-            echo "✅ DEPLOYMENT SUCCESSFUL!"
+            echo "DEPLOYMENT SUCCESSFUL!"
             echo ""
             echo "VERSION: ${VERSION_TAG}"
             echo ""
@@ -453,7 +453,7 @@ docker run -d -p 8080:8080 --name todo-app-latest ${IMAGE_LATEST}</pre>
         }
         failure {
             echo ""
-            echo "❌ BUILD FAILED!"
+            echo "BUILD FAILED!"
             echo "Possible reasons:"
             echo "   1. Code compilation failed"
             echo "   2. SonarQube quality gate failed"
