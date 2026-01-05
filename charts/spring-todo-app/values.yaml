@@ -1,0 +1,86 @@
+# Spring Boot 应用配置
+replicaCount: 1
+
+image:
+  repository: pengchaoma/springboot-todo-app
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: todo-app.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    memory: 512Mi
+    cpu: 500m
+  requests:
+    memory: 256Mi
+    cpu: 250m
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# 应用配置
+app:
+  name: "spring-todo-app"
+  port: 8080
+  # 数据库连接配置
+  database:
+    host: "mysql-service"  # 使用服务名或占位符
+    port: 3306
+    name: "todo_db"
+    username: "todo_user"
+    passwordSecret: "mysql-secret"
+    passwordSecretKey: "mysql-password"
+
+# 配置环境变量（在模板中会使用模板语法填充）
+env:
+  - name: SPRING_DATASOURCE_URL
+    value: ""  # 留空，在模板中填充
+  - name: SPRING_DATASOURCE_USERNAME
+    value: "todo_user"
+  - name: SPRING_DATASOURCE_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: "mysql-secret"  # 使用固定名称或占位符
+        key: "mysql-password"
+
+# MySQL Chart 配置
+mysql:
+  enabled: true
+  auth:
+    database: "todo_db"
+    username: "todo_user"
+    existingSecret: ""
+    password: ""  # 如果留空，Helm会自动生成
+    rootPassword: ""
+  
+  primary:
+    persistence:
+      enabled: true
+      size: 8Gi
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 250m
+      limits:
+        memory: 512Mi
+        cpu: 500m
