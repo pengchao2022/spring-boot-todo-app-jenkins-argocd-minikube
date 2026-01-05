@@ -69,7 +69,7 @@ mysql:
   image:
     registry: docker.io
     repository: bitnami/mysql
-    tag: 8.0.34-debian-11-r75  
+    tag: 8.0.34  
     pullPolicy: IfNotPresent
   auth:
     database: "todo_db"
