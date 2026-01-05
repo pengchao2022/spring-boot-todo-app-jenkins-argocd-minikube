@@ -165,7 +165,7 @@ pipeline {
             }
         }
         
-        stage('Scan Docker Image with Trivy') {
+        stage('Trivy Scan Docker Image') {
             steps {
                 script {
                     echo "=== Scanning Docker Image ${IMAGE_FULL} with Trivy ==="
