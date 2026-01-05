@@ -185,7 +185,7 @@ pipeline {
                             docker logout
                             
                             echo ""
-                            echo "✅ All images pushed successfully!"
+                            echo "All images pushed successfully!"
                         """
                     }
                 }
@@ -196,19 +196,19 @@ pipeline {
     post {
         success {
             echo ""
-            echo "🎉🎉🎉 DEPLOYMENT SUCCESSFUL! 🎉🎉🎉"
+            echo "DEPLOYMENT SUCCESSFUL!"
             echo ""
-            echo "📊 VERSION: ${VERSION_TAG}"
+            echo "VERSION: ${VERSION_TAG}"
             echo ""
-            echo "🐳 DOCKER IMAGES:"
-            echo "   🏷️  Full Version: ${IMAGE_FULL}"
-            echo "   🔖 Semantic Version: ${IMAGE_VERSION}"
-            echo "   ⭐ Latest: ${IMAGE_LATEST}"
+            echo "DOCKER IMAGES:"
+            echo "   Full Version: ${IMAGE_FULL}"
+            echo "   Semantic Version: ${IMAGE_VERSION}"
+            echo "   Latest: ${IMAGE_LATEST}"
             echo ""
-            echo "🔍 CODE QUALITY:"
-            echo "   📊 SonarQube: ${SONAR_HOST_URL}/dashboard?id=${SONAR_PROJECT_KEY}"
+            echo "CODE QUALITY:"
+            echo "   SonarQube: ${SONAR_HOST_URL}/dashboard?id=${SONAR_PROJECT_KEY}"
             echo ""
-            echo "🚀 DEPLOYMENT OPTIONS:"
+            echo "DEPLOYMENT OPTIONS:"
             echo "   # For production (specific version)"
             echo "   docker pull ${IMAGE_VERSION}"
             echo "   docker run -d -p 8080:8080 --name todo-app-${SHORT_VERSION_TAG} ${IMAGE_VERSION}"
