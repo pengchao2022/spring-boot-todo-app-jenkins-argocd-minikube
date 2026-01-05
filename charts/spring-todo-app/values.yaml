@@ -57,7 +57,7 @@ mysql:
   image:
     registry: docker.io
     repository: bitnami/mysql
-    tag: "8.0.34"   
+    tag: "8.0"   
     pullPolicy: IfNotPresent
   
   auth:
