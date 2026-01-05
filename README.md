@@ -122,7 +122,7 @@ I will create all from the very beginning.
 
 - Here's the pipeline stage overview
 
- ![minikube](./minikube.png)
+ ![jenkins-pipeline](./jenkins_pipeline.png)
 
 
 
