@@ -1,5 +1,5 @@
 # Spring Boot 应用配置
-replicaCount: 1
+replicaCount: 3
 
 image:
   repository: pengchaoma/springboot-todo-app
@@ -44,34 +44,27 @@ app:
   port: 8080
   # 数据库连接配置（使用模板变量）
   database:
-    host: "{{ .Release.Name }}-mysql"  # 使用 Helm Release 名称
+    host: "{{ .Release.Name }}-mysql-primary"  # 重要：改为连接主节点
     port: 3306
     name: "todo_db"
     username: "todo_user"
     password: "{{ .Values.mysql.auth.password }}"
 
-# MySQL Chart 配置
+# MySQL Chart 配置 - 1主2从复制集群
 mysql:
   enabled: true
-  # 使用官方 MySQL 镜像（推荐）
-  image:
-    registry: docker.io
-    repository: mysql
-    tag: "8.0"   
-    pullPolicy: IfNotPresent
   
-  auth:
-    database: "todo_db"
-    username: "todo_user"
-    password: "todo_password"  # 明确设置密码
-    rootPassword: "root_password"  # 明确设置 root 密码
-    existingSecret: ""
+  # 核心架构配置
+  architecture: replication  # 改为复制模式
   
+  # 主节点配置
   primary:
+    name: primary  # 主节点名称
+    replicaCount: 1  # 主节点固定为1个副本
     persistence:
       enabled: true
       size: 8Gi
-      storageClass: "standard"  # Minikube 默认存储类
+      storageClass: "standard"
     resources:
       requests:
         memory: 256Mi
@@ -79,4 +72,58 @@ mysql:
       limits:
         memory: 512Mi
         cpu: 500m
-
+  
+  # 从节点配置（新增）
+  secondary:
+    name: secondary  # 从节点名称
+    replicaCount: 2  # 从节点数量为2
+    persistence:
+      enabled: true
+      size: 8Gi
+      storageClass: "standard"
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 250m
+      limits:
+        memory: 512Mi
+        cpu: 500m
+  
+  # 镜像配置
+  image:
+    registry: docker.io
+    repository: mysql
+    tag: "8.0"
+    pullPolicy: IfNotPresent
+  
+  # 认证配置
+  auth:
+    database: "todo_db"
+    username: "todo_user"
+    password: "todo_password"
+    rootPassword: "root_password"
+    existingSecret: ""
+    replicationPassword: "replica_password"  # 主从复制密码
+  
+  # 服务配置
+  service:
+    enabled: true
+    type: ClusterIP
+    port: 3306
+    primary:
+      enabled: true
+      type: ClusterIP
+      port: 3306
+    secondary:
+      enabled: true
+      type: ClusterIP
+      port: 3306
+  
+  # 初始化配置
+  initdbScriptsConfigMap: ""
+  initdbScriptsSecret: ""
+  
+  # 额外配置
+  extraEnvVars: []
+  extraEnvVarsCM: ""
+  extraEnvVarsSecret: ""
