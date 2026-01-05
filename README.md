@@ -161,6 +161,12 @@ I will create all from the very beginning.
 
 - You can use argocd cli or just use argocd UI to create the todo-app
 
+  - For argocd cli create app you need to run:
+
+    ```shell
+       argocd app create -f application.yaml
+    ```
+
    - click "New App"
 
    ![argo_app_create](./argo-app-create.png)
