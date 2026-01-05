@@ -100,7 +100,7 @@ pipeline {
             }
         }
         
-        stage('Compile Code') {
+        stage('Maven Compile Code') {
             steps {
                 sh '''
                     echo "=== Compiling version ${VERSION_TAG} ==="
