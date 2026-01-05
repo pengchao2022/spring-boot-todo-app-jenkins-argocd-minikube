@@ -30,21 +30,21 @@ I will create all from the very beginning.
 
     - Install sonarqube as a code scan server
 
-    ![jenkins-master-agent-sonar](./jenkins-sonar.png)
+      ![jenkins-master-agent-sonar](./jenkins-sonar.png)
 
 
 - Alibaba ECS 2 (4 cpus, 8GB memory) with Public IP
 
     - Install minikube 
 
-    ![minikube](./minikube.png)
+      ![minikube](./minikube.png)
 
     - Install ArgoCD on minikube (please be noticed the service should be NodePort)
 
-    ![argocd](./argocd.png)
+      ![argocd](./argocd.png)
 
 
-    
+
 
 
 
