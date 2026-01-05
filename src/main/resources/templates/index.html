@@ -145,8 +145,8 @@
                         <div class="todo-meta">
                             <span class="todo-date">
                                 <i class="far fa-calendar"></i>
-                                <!-- 修复这里：移除嵌套的 th:text -->
-                                <span th:text="${todo.createdAt != null ? #dates.format(todo.createdAt, 'yyyy-MM-dd HH:mm') : 'Just now'}">
+                                <!-- 修复这里：将 #dates.format 改为 #temporals.format -->
+                                <span th:text="${todo.createdAt != null ? #temporals.format(todo.createdAt, 'yyyy-MM-dd HH:mm') : 'Just now'}">
                                     Just now
                                 </span>
                             </span>
