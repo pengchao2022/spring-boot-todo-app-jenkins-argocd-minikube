@@ -161,6 +161,37 @@ pipeline {
             }
         }
         
+        stage('Scan Docker Image with Trivy') {
+            steps {
+                script {
+                    echo "=== Scanning Docker Image ${IMAGE_FULL} with Trivy ==="
+                    
+                    // 扫描完整版本的镜像
+                    sh """
+                        trivy image \\
+                          --exit-code 1 \\
+                          --severity HIGH,CRITICAL \\
+                          --ignore-unfixed \\
+                          --format table \\
+                          ${IMAGE_FULL}
+                    """
+                    
+                    // 同时扫描语义版本标签的镜像（可选）
+                    echo "=== Scanning Docker Image ${IMAGE_VERSION} with Trivy ==="
+                    sh """
+                        trivy image \\
+                          --exit-code 0 \\
+                          --severity HIGH,CRITICAL \\
+                          --ignore-unfixed \\
+                          --format table \\
+                          ${IMAGE_VERSION}
+                    """
+                    
+                    echo "Trivy vulnerability scanning completed successfully."
+                }
+            }
+        }
+        
         stage('Push to Docker Hub') {
             steps {
                 script {
@@ -205,6 +236,9 @@ pipeline {
             echo "   Semantic Version: ${IMAGE_VERSION}"
             echo "   Latest: ${IMAGE_LATEST}"
             echo ""
+            echo "SECURITY SCAN:"
+            echo "   Trivy scan completed - No HIGH/CRITICAL vulnerabilities found"
+            echo ""
             echo "CODE QUALITY:"
             echo "   SonarQube: ${SONAR_HOST_URL}/dashboard?id=${SONAR_PROJECT_KEY}"
             echo ""
@@ -220,6 +254,18 @@ pipeline {
             echo "   # For development (latest)"
             echo "   docker pull ${IMAGE_LATEST}"
             echo "   docker run -d -p 8080:8080 --name todo-app-latest ${IMAGE_LATEST}"
+        }
+        failure {
+            echo ""
+            echo "BUILD FAILED!"
+            echo "Possible reasons:"
+            echo "   1. Code compilation failed"
+            echo "   2. Unit tests failed"
+            echo "   3. SonarQube quality gate failed"
+            echo "   4. Trivy found HIGH or CRITICAL vulnerabilities in the Docker image"
+            echo ""
+            echo "For security vulnerabilities, check the Trivy scan output above."
+            echo "If vulnerabilities need to be addressed, fix the Dockerfile or base image."
         }
     }
 }
