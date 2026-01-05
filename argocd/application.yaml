@@ -8,50 +8,46 @@ metadata:
 spec:
   project: default
   
-  # 同步策略
   syncPolicy:
     automated:
-      prune: true  # 自动删除不再使用的资源
-      selfHeal: true  # 自动修复偏差
+      prune: true  
+      selfHeal: true 
     syncOptions:
-      - CreateNamespace=true  # 如果命名空间不存在则创建
+      - CreateNamespace=true  
     
-    # 保留资源钩子
     retry:
       limit: 5
       backoff:
         duration: 5s
         factor: 2
         maxDuration: 3m
-  
-  # 源仓库配置
+
   source:
     repoURL: https://github.com/pengchao2022/spring-boot-todo-app-jenkins-argocd-minikube.git
-    targetRevision: HEAD  # 可以指定分支、标签或提交
-    path: charts/spring-todo-app  # Helm Chart 路径
+    targetRevision: HEAD  
+    path: charts/spring-todo-app  
     
-    # Helm 配置
     helm:
       valueFiles:
         - values.yaml
-      # 覆盖镜像标签（重要！）
+      
       parameters:
         - name: image.tag
-          value: "latest"  # 这里可以被 ArgoCD 自动更新
+          value: "latest"  
   
-  # 目标集群配置
+  
   destination:
-    server: https://kubernetes.default.svc  # 使用当前集群
-    namespace: todo-app  # 部署到的命名空间
+    server: https://kubernetes.default.svc 
+    namespace: todo-app  
   
-  # 健康检查
+  # health checks
   ignoreDifferences:
     - group: apps
       kind: Deployment
       jsonPointers:
         - /spec/replicas
   
-  # 资源限制
+  # resource limis
   info:
     - name: description
       value: Spring Boot Todo Application with MySQL

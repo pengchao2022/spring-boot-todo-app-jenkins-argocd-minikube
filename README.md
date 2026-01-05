@@ -139,8 +139,16 @@ I will create all from the very beginning.
   ```
  ![trivy-result](./trivy-files.png)
 
- 
 
+- I use the Semantic version control, you can see in my docker hub the image tags
+
+  ![docker_hub](./docker_hub.png)
+
+  - latest	Latest Stable Version	Default tag, always points to the most recent successful build
+
+  - 1.0.0	Major Version Number	Stable release version
+
+  - 1.0.0.30	Build Number	The 30th build (specific version)
 
 
 
