@@ -124,6 +124,11 @@ I will create all from the very beginning.
 
  ![jenkins-pipeline](./jenkins_pipeline.png)
 
+ - I use sonarqube to scan the code after maven compiled and here's the issues found
+
+ ![sonarqube-scan](./sonar-qube-scan.png)
+ 
+
 
 
 
