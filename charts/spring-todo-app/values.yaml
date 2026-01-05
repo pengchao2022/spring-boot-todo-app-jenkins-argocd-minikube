@@ -56,8 +56,8 @@ mysql:
   # 使用官方 MySQL 镜像（推荐）
   image:
     registry: docker.io
-    repository: mysql  # 改为官方 MySQL 镜像
-    tag: "8.0"  # 或 "8.0.44"，确保标签存在
+    repository: bitnami/mysql
+    tag: "8.0.34"   
     pullPolicy: IfNotPresent
   
   auth:
