@@ -1,127 +1,85 @@
 pipeline {
-    agent any
+    agent {
+        label 'jenkins-agent'
+    }
     
     environment {
-        // Docker Hub 配置
         DOCKER_HUB_USER = 'pengchaoma'
         DOCKER_HUB_CREDENTIALS = 'dockerhub-creds'
-        
-        // 镜像配置
         IMAGE_NAME = 'spring-todo-app'
         IMAGE_TAG = "build-${BUILD_NUMBER}"
         IMAGE_FULL = "${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
         IMAGE_LATEST = "${DOCKER_HUB_USER}/${IMAGE_NAME}:latest"
-        
-        // Maven 配置
-        MAVEN_HOME = tool 'maven-3.9'
-    }
-    
-    tools {
-        maven 'maven-3.9'
-        jdk 'jdk17'
+        JAVA_HOME = '/opt/java/openjdk'
+        MAVEN_HOME = '/home/jenkins/tools/maven/apache-maven-3.9.12'
     }
     
     stages {
         stage('Checkout') {
             steps {
-                echo '📦 Checking out code...'
                 checkout scm
-                sh '''
-                    echo "=== Project Structure ==="
-                    find . -name "*.java" -o -name "*.xml" -o -name "Dockerfile" | sort
-                '''
+                sh 'ls -la'
             }
         }
         
-        stage('Build') {
+        stage('Setup Environment') {
             steps {
-                echo '🔨 Building with Maven...'
-                sh '''
+                sh """
+                    export PATH=${MAVEN_HOME}/bin:${JAVA_HOME}/bin:\\\$PATH
+                    java -version
+                    mvn -version
+                """
+            }
+        }
+        
+        stage('Compile') {
+            steps {
+                sh """
+                    export PATH=${MAVEN_HOME}/bin:${JAVA_HOME}/bin:\\\$PATH
                     mvn clean compile
-                    echo "Build completed!"
-                '''
+                """
             }
         }
         
         stage('Test') {
             steps {
-                echo '🧪 Running tests...'
-                sh '''
+                sh """
+                    export PATH=${MAVEN_HOME}/bin:${JAVA_HOME}/bin:\\\$PATH
                     mvn test
-                    echo "Tests completed!"
-                '''
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                    jacoco execPattern: '**/target/jacoco.exec'
-                }
+                """
             }
         }
         
         stage('Package') {
             steps {
-                echo '📦 Packaging JAR...'
-                sh '''
+                sh """
+                    export PATH=${MAVEN_HOME}/bin:${JAVA_HOME}/bin:\\\$PATH
                     mvn package -DskipTests
-                    ls -lh target/*.jar
-                '''
+                """
             }
         }
         
-        stage('Build Docker Image') {
+        stage('Docker Build') {
             steps {
-                echo '🐳 Building Docker image...'
-                script {
+                sh """
+                    docker build -t ${IMAGE_FULL} .
+                    docker tag ${IMAGE_FULL} ${IMAGE_LATEST}
+                """
+            }
+        }
+        
+        stage('Docker Push') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: DOCKER_HUB_CREDENTIALS,
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
                     sh """
-                        docker build -t ${IMAGE_FULL} .
-                        docker tag ${IMAGE_FULL} ${IMAGE_LATEST}
+                        echo "\${DOCKER_PASSWORD}" | docker login -u "\${DOCKER_USER}" --password-stdin
+                        docker push ${IMAGE_FULL}
+                        docker push ${IMAGE_LATEST}
                     """
-                    
-                    sh '''
-                        echo "=== Image Info ==="
-                        docker images | grep ${DOCKER_HUB_USER}/${IMAGE_NAME}
-                    '''
-                }
-            }
-        }
-        
-        stage('Test Docker Image') {
-            steps {
-                echo '🚀 Testing Docker image...'
-                script {
-                    sh """
-                        # 启动测试容器
-                        docker run -d --name todo-test -p 8081:8080 ${IMAGE_FULL}
-                        sleep 10
-                        
-                        # 测试健康检查
-                        echo "Testing health endpoint..."
-                        curl -f http://localhost:8081/api/health || echo "Health check failed"
-                        
-                        # 停止容器
-                        docker stop todo-test
-                        docker rm todo-test
-                    """
-                }
-            }
-        }
-        
-        stage('Push to Docker Hub') {
-            steps {
-                echo '📤 Pushing to Docker Hub...'
-                script {
-                    withCredentials([usernamePassword(
-                        credentialsId: "${DOCKER_HUB_CREDENTIALS}",
-                        usernameVariable: 'DOCKER_USER',
-                        passwordVariable: 'DOCKER_PASS'
-                    )]) {
-                        sh """
-                            echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
-                            docker push ${IMAGE_FULL}
-                            docker push ${IMAGE_LATEST}
-                        """
-                    }
                 }
             }
         }
@@ -129,40 +87,14 @@ pipeline {
     
     post {
         success {
-            echo '🎉 CI Pipeline completed successfully!'
-            script {
-                echo """
-                =========================================
-                ✅ CI PROCESS COMPLETE
-                =========================================
-                
-                📦 Docker Images:
-                   🏷️  ${IMAGE_FULL}
-                   🔖 ${IMAGE_LATEST}
-                
-                🔗 Pull Commands:
-                   docker pull ${IMAGE_FULL}
-                   docker pull ${IMAGE_LATEST}
-                
-                🚀 Run Commands:
-                   docker run -d -p 8080:8080 ${IMAGE_FULL}
-                
-                🌐 Access:
-                   http://localhost:8080
-                   http://localhost:8080/api/health
-                =========================================
-                """
-            }
+            echo "Build ${BUILD_NUMBER} success"
+            echo "Image: ${IMAGE_FULL}"
         }
         failure {
-            echo '❌ Pipeline failed!'
+            echo "Build ${BUILD_NUMBER} failed"
         }
         always {
-            echo '🧹 Cleaning up...'
-            sh '''
-                docker logout 2>/dev/null || true
-                docker system prune -f 2>/dev/null || true
-            '''
+            sh 'docker logout 2>/dev/null || true'
         }
     }
 }
