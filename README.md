@@ -109,7 +109,7 @@ I will create all from the very beginning.
             info:
                 - name: description
                 value: Spring Boot Todo Application with MySQL
-     ```
+      ```
     - Charts part
         
         - In this folder i will create deployment.yaml including mysql and todo-app, service.yaml and values.yaml files
@@ -118,11 +118,11 @@ I will create all from the very beginning.
 
 ## Jenkins CI 
 
-    - The jenkins will do the continuing intergration
+- The jenkins will do the continuing intergration
 
-       - Here's the pipeline stage overview
+- Here's the pipeline stage overview
 
-         ![jenkins_pipeline](./jenkins_pipeline.png)
+ ![minikube](./minikube.png)
 
 
 
