@@ -48,7 +48,7 @@ pipeline {
             }
         }
         
-        stage('Compile Code') {
+        stage('Maven Compile Code') {
             steps {
                 sh '''
                     echo "=== Compiling source code ==="
@@ -77,7 +77,7 @@ pipeline {
                 script {
                     echo "=== Starting SonarQube Analysis ==="
                     
-                    // 使用我们测试成功的 Token 凭据
+                    
                     withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
                         sh """
                             echo "SonarQube URL: ${SONAR_HOST_URL}"
