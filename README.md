@@ -28,5 +28,5 @@ I will create all from the very beginning.
 
     - Install sonarqube as a code scan server
 
-    ![jenkins-master-agent-sonar](./jenkins-master-agent.png)
+    ![jenkins-master-agent-sonar](./jenkins-sonar.png)
 
