@@ -128,6 +128,20 @@ I will create all from the very beginning.
 
  ![sonarqube-scan](./sonar-qube-scan.png)
  
+- I installed trivy on jenkins-agent so that it can scan the image before I push to docker hub
+
+  ![trivy](./trivy.png)
+
+- Normally, you can find the trivy scan report in your jenkins-agent directory
+
+  ```sh
+  /home/jenkins/agent/workspace/springboot-todo-ci-demo
+  ```
+ ![trivy-result](./trivy-files.png)
+
+ 
+
+
 
 
 
