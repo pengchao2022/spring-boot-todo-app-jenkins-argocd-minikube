@@ -3,83 +3,58 @@ pipeline {
         label 'jenkins-agent'
     }
     
+    tools {
+        maven 'maven'
+    }
+    
     environment {
         DOCKER_HUB_USER = 'pengchaoma'
         DOCKER_HUB_CREDENTIALS = 'dockerhub-creds'
-        IMAGE_NAME = 'spring-todo-app'
-        IMAGE_TAG = "build-${BUILD_NUMBER}"
+        IMAGE_NAME = 'springboot-todo-app'
+        IMAGE_TAG = "${BUILD_NUMBER}"
         IMAGE_FULL = "${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
         IMAGE_LATEST = "${DOCKER_HUB_USER}/${IMAGE_NAME}:latest"
-        JAVA_HOME = '/opt/java/openjdk'
-        MAVEN_HOME = '/home/jenkins/tools/maven/apache-maven-3.9.12'
     }
     
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
                 checkout scm
-                sh 'ls -la'
             }
         }
         
-        stage('Setup Environment') {
+        stage('Build with Maven') {
             steps {
-                sh """
-                    export PATH=${MAVEN_HOME}/bin:${JAVA_HOME}/bin:\\\$PATH
-                    java -version
-                    mvn -version
-                """
+                sh 'mvn clean package -DskipTests'
             }
         }
         
-        stage('Compile') {
+        stage('Build Docker Image') {
             steps {
-                sh """
-                    export PATH=${MAVEN_HOME}/bin:${JAVA_HOME}/bin:\\\$PATH
-                    mvn clean compile
-                """
-            }
-        }
-        
-        stage('Test') {
-            steps {
-                sh """
-                    export PATH=${MAVEN_HOME}/bin:${JAVA_HOME}/bin:\\\$PATH
-                    mvn test
-                """
-            }
-        }
-        
-        stage('Package') {
-            steps {
-                sh """
-                    export PATH=${MAVEN_HOME}/bin:${JAVA_HOME}/bin:\\\$PATH
-                    mvn package -DskipTests
-                """
-            }
-        }
-        
-        stage('Docker Build') {
-            steps {
-                sh """
-                    docker build -t ${IMAGE_FULL} .
-                    docker tag ${IMAGE_FULL} ${IMAGE_LATEST}
-                """
-            }
-        }
-        
-        stage('Docker Push') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: DOCKER_HUB_CREDENTIALS,
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASSWORD'
-                )]) {
+                script {
                     sh """
-                        echo "\${DOCKER_PASSWORD}" | docker login -u "\${DOCKER_USER}" --password-stdin
-                        docker push ${IMAGE_FULL}
-                        docker push ${IMAGE_LATEST}
+                        docker build -t ${IMAGE_FULL} .
+                        docker tag ${IMAGE_FULL} ${IMAGE_LATEST}
                     """
+                }
+            }
+        }
+        
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: "${DOCKER_HUB_CREDENTIALS}",
+                        usernameVariable: 'DOCKER_USERNAME',
+                        passwordVariable: 'DOCKER_PASSWORD'
+                    )]) {
+                        sh """
+                            echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+                            docker push ${IMAGE_FULL}
+                            docker push ${IMAGE_LATEST}
+                            docker logout
+                        """
+                    }
                 }
             }
         }
@@ -87,14 +62,13 @@ pipeline {
     
     post {
         success {
-            echo "Build ${BUILD_NUMBER} success"
-            echo "Image: ${IMAGE_FULL}"
+            echo "✅ Build successful!"
+            echo "Images pushed to Docker Hub:"
+            echo "- ${IMAGE_FULL}"
+            echo "- ${IMAGE_LATEST}"
         }
         failure {
-            echo "Build ${BUILD_NUMBER} failed"
-        }
-        always {
-            sh 'docker logout 2>/dev/null || true'
+            echo "❌ Build failed!"
         }
     }
 }
