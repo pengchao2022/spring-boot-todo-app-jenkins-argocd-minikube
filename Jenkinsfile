@@ -65,16 +65,16 @@ pipeline {
                             mvn clean compile -DskipTests
                             
                             # 运行 SonarQube 扫描
-                            mvn sonar:sonar \
-                              -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                              -Dsonar.projectName='${SONAR_PROJECT_NAME}' \
-                              -Dsonar.host.url=${SONAR_HOST_URL} \
-                              -Dsonar.login=${SONAR_TOKEN} \
-                              -Dsonar.sources=src/main/java \
-                              -Dsonar.java.binaries=target/classes \
-                              -Dsonar.sourceEncoding=UTF-8 \
-                              -Dsonar.java.source=17 \
-                              -Dsonar.exclusions=**/*Test*.java,**/test/** \
+                            mvn sonar:sonar \\
+                              -Dsonar.projectKey=${SONAR_PROJECT_KEY} \\
+                              -Dsonar.projectName='${SONAR_PROJECT_NAME}' \\
+                              -Dsonar.host.url=${SONAR_HOST_URL} \\
+                              -Dsonar.login=\${SONAR_TOKEN} \\
+                              -Dsonar.sources=src/main/java \\
+                              -Dsonar.java.binaries=target/classes \\
+                              -Dsonar.sourceEncoding=UTF-8 \\
+                              -Dsonar.java.source=17 \\
+                              -Dsonar.exclusions=**/*Test*.java,**/test/** \\
                               -DskipTests
                         """
                     }
@@ -116,11 +116,11 @@ pipeline {
                         echo "=== Docker images created ==="
                         docker images | grep ${DOCKER_HUB_USER}/${IMAGE_NAME} || echo "No matching images found"
                         
-                        # 显示镜像详情
+                        # 显示镜像详情 - 修复这里的转义问题
                         echo ""
                         echo "=== Image details ==="
-                        docker inspect ${IMAGE_FULL} --format='Size: {{.Size}} bytes' | awk '{print "Image size: " $1/1024/1024 " MB"}'
-                    '''
+                        docker inspect ${IMAGE_FULL} --format='Size: {{.Size}} bytes' | awk '{print "Image size: " \$1/1024/1024 " MB"}'
+                    """
                 }
             }
         }
@@ -140,7 +140,7 @@ pipeline {
                             echo ""
                             
                             # 登录 Docker Hub
-                            echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+                            echo "\${DOCKER_PASSWORD}" | docker login -u "\${DOCKER_USERNAME}" --password-stdin
                             
                             # 推送镜像
                             echo "Pushing ${IMAGE_FULL}..."
