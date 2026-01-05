@@ -37,7 +37,6 @@ pipeline {
         // 邮件通知配置
         EMAIL_RECIPIENTS = '18510656167@163.com'
         EMAIL_FROM = 'pengchao.ma6@gmail.com'
-        BUILD_URL = "${env.BUILD_URL}"
     }
     
     stages {
@@ -232,28 +231,31 @@ pipeline {
                             docker logout
                             
                             echo ""
-                            echo "All images pushed successfully!"
+                            echo "✅ All images pushed successfully!"
                         """
                     }
                 }
             }
         }
-    }
-    
-    post {
-        always {
-            script {
-                // 获取构建状态和信息
-                def buildStatus = currentBuild.result ?: 'SUCCESS'
-                def duration = currentBuild.durationString.replace(' and counting', '')
-                def trigger = currentBuild.getBuildCauses()[0]?.shortDescription ?: "Manual trigger"
-                def startTime = currentBuild.startTimeInMillis
-                def formattedTime = new Date(startTime).format("yyyy-MM-dd HH:mm:ss")
-                
-                // 发送邮件通知
-                emailext(
-                    subject: "[Jenkins CI] Spring Boot Todo App - Build #${BUILD_NUMBER} - ${buildStatus}",
-                    body: """
+        
+        stage('Send Email Notification') {
+            steps {
+                script {
+                    echo "=== Sending Email Notification ==="
+                    echo "Recipient: ${EMAIL_RECIPIENTS}"
+                    echo "From: ${EMAIL_FROM}"
+                    
+                    // 获取构建状态和信息
+                    def buildStatus = currentBuild.result ?: 'SUCCESS'
+                    def duration = currentBuild.durationString.replace(' and counting', '')
+                    def trigger = currentBuild.getBuildCauses()[0]?.shortDescription ?: "Manual trigger"
+                    def startTime = currentBuild.startTimeInMillis
+                    def formattedTime = new Date(startTime).format("yyyy-MM-dd HH:mm:ss")
+                    
+                    // 发送邮件通知
+                    emailext(
+                        subject: "[Jenkins CI] Spring Boot Todo App - Build #${BUILD_NUMBER} - ${buildStatus}",
+                        body: """
 <!DOCTYPE html>
 <html>
 <head>
@@ -405,17 +407,20 @@ docker run -d -p 8080:8080 --name todo-app-latest ${IMAGE_LATEST}</pre>
     </div>
 </body>
 </html>
-                    """,
-                    to: "${EMAIL_RECIPIENTS}",
-                    from: "${EMAIL_FROM}",
-                    replyTo: "${EMAIL_FROM}",
-                    mimeType: "text/html"
-                )
-                
-                echo "📧 Email notification sent to ${EMAIL_RECIPIENTS}"
+                        """,
+                        to: "${EMAIL_RECIPIENTS}",
+                        from: "${EMAIL_FROM}",
+                        replyTo: "${EMAIL_FROM}",
+                        mimeType: "text/html"
+                    )
+                    
+                    echo "✅ Email notification sent successfully to ${EMAIL_RECIPIENTS}"
+                }
             }
         }
-        
+    }
+    
+    post {
         success {
             echo ""
             echo "✅ DEPLOYMENT SUCCESSFUL!"
