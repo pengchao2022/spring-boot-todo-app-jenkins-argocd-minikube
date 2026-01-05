@@ -1,6 +1,6 @@
 # spring-boot-todo-app-jenkins-argocd-minikube
 
-In this demo, I will use github and jenkins, argocd, minikube to deploy a spring-boot todo app, It's just a simple website with mysql database, All I want to do is to show you the CICD process.
+In this demo, I will use github and jenkins, argocd, minikube to deploy a spring-boot, maven project todo app, It's just a simple website with mysql database, All I want to do is to show you the CICD process.
 
 Since my free AWS account has been expired, So I will install minikube instead of EKS on Alibaba Cloud ECS server
 
@@ -42,6 +42,74 @@ I will create all from the very beginning.
     - Install ArgoCD on minikube (please be noticed the service should be NodePort)
 
       ![argocd](./argocd.png)
+
+## Code structure
+
+- src part
+
+    - I will use spring boot java as backend and has the REST API for CRUD
+
+    - I will use thymeleaf for forntend java template webpage
+
+    - The argocd folder will have the application.yaml if you need to create the app using argocd CLI
+
+      ```sh
+            apiVersion: argoproj.io/v1alpha1
+            kind: Application
+            metadata:
+            name: spring-todo-app
+            namespace: argocd
+            finalizers:
+                - resources-finalizer.argocd.argoproj.io
+            spec:
+            project: default
+            
+            syncPolicy:
+                automated:
+                prune: true  
+                selfHeal: true 
+                syncOptions:
+                - CreateNamespace=true  
+                
+                retry:
+                limit: 5
+                backoff:
+                    duration: 5s
+                    factor: 2
+                    maxDuration: 3m
+
+            source:
+                repoURL: https://github.com/pengchao2022/spring-boot-todo-app-jenkins-argocd-minikube.git
+                targetRevision: HEAD  
+                path: charts/spring-todo-app  
+                
+                helm:
+                valueFiles:
+                    - values.yaml
+                
+                parameters:
+                    - name: image.tag
+                    value: "latest"  
+            
+            
+            destination:
+                server: https://kubernetes.default.svc 
+                namespace: todo-app  
+            
+            # health checks
+            ignoreDifferences:
+                - group: apps
+                kind: Deployment
+                jsonPointers:
+                    - /spec/replicas
+            
+            # resource limis
+            info:
+                - name: description
+                value: Spring Boot Todo Application with MySQL
+     ```
+
+     
 
 
 
