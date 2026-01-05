@@ -48,6 +48,30 @@ pipeline {
             }
         }
         
+        stage('Compile Code') {
+            steps {
+                sh '''
+                    echo "=== Compiling source code ==="
+                    mvn clean compile -DskipTests
+                    
+                    echo "=== Compilation results ==="
+                    if [ -d "target/classes" ]; then
+                        echo "✅ Compilation successful!"
+                        echo "Compiled classes: $(find target/classes -name "*.class" | wc -l)"
+                    else
+                        echo "❌ Compilation failed - no classes directory found"
+                        exit 1
+                    fi
+                '''
+            }
+            
+            post {
+                failure {
+                    echo '❌ Compilation failed! Check Maven output for errors.'
+                }
+            }
+        }
+        
         stage('SonarQube Code Analysis') {
             steps {
                 script {
@@ -61,11 +85,9 @@ pipeline {
                             echo "Project Name: ${SONAR_PROJECT_NAME}"
                             echo ""
                             
-                            # 先编译代码
-                            mvn clean compile -DskipTests
-                            
                             # 运行 SonarQube 扫描
-                            mvn sonar:sonar \\
+                            echo "Running SonarQube analysis..."
+                            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar \\
                               -Dsonar.projectKey=${SONAR_PROJECT_KEY} \\
                               -Dsonar.projectName='${SONAR_PROJECT_NAME}' \\
                               -Dsonar.host.url=${SONAR_HOST_URL} \\
@@ -83,13 +105,22 @@ pipeline {
                     echo "📊 Report available at: ${SONAR_HOST_URL}/dashboard?id=${SONAR_PROJECT_KEY}"
                 }
             }
+            
+            post {
+                success {
+                    echo '✅ SonarQube analysis completed!'
+                }
+                failure {
+                    echo '❌ SonarQube analysis failed!'
+                }
+            }
         }
         
-        stage('Build and Package') {
+        stage('Package Application') {
             steps {
                 sh '''
-                    echo "=== Building and packaging application ==="
-                    mvn clean package -DskipTests
+                    echo "=== Packaging application ==="
+                    mvn package -DskipTests
                     
                     echo "=== Build artifacts ==="
                     ls -lh target/*.jar
@@ -102,6 +133,15 @@ pipeline {
                         echo "Created: $(stat -c %y ${JAR_FILE})"
                     fi
                 '''
+            }
+            
+            post {
+                success {
+                    echo '✅ Application packaged successfully!'
+                }
+                failure {
+                    echo '❌ Packaging failed!'
+                }
             }
         }
         
@@ -116,11 +156,20 @@ pipeline {
                         echo "=== Docker images created ==="
                         docker images | grep ${DOCKER_HUB_USER}/${IMAGE_NAME} || echo "No matching images found"
                         
-                        # 显示镜像详情 - 修复这里的转义问题
+                        # 显示镜像详情
                         echo ""
                         echo "=== Image details ==="
                         docker inspect ${IMAGE_FULL} --format='Size: {{.Size}} bytes' | awk '{print "Image size: " \$1/1024/1024 " MB"}'
                     """
+                }
+            }
+            
+            post {
+                success {
+                    echo '✅ Docker image built successfully!'
+                }
+                failure {
+                    echo '❌ Docker build failed!'
                 }
             }
         }
@@ -156,6 +205,15 @@ pipeline {
                             echo "✅ Images pushed successfully!"
                         """
                     }
+                }
+            }
+            
+            post {
+                success {
+                    echo '✅ Docker images pushed to Docker Hub!'
+                }
+                failure {
+                    echo '❌ Docker push failed!'
                 }
             }
         }
@@ -201,9 +259,11 @@ pipeline {
             echo ""
             echo "❌❌❌ PIPELINE FAILED! ❌❌❌"
             echo ""
+            echo "Failed stage: ${env.STAGE_NAME}"
+            echo ""
             echo "Possible issues to check:"
-            echo "1. Maven build errors"
-            echo "2. SonarQube connection issues"
+            echo "1. Maven compilation errors"
+            echo "2. SonarQube plugin/connection issues"
             echo "3. Docker build failures"
             echo "4. Docker Hub authentication"
             echo "5. Network connectivity"
