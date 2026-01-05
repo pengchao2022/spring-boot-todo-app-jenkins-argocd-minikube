@@ -165,6 +165,31 @@ I will create all from the very beginning.
 
    ![argo_app_create](./argo-app-create.png)
 
+- fill in the github repo and select the helm charts directoy
+
+   ![argo_URL](./argo_URL.png)
+
+- After few second you can see the app is ready
+
+   ![app_ready](./app_ready.png)
+
+- Check pods and services in minikube
+
+   ![pods-service](./pods-service.png)
+
+- Use the kubectl port-forward to access the todo-app outside of minikube
+
+```shell
+   kubectl port-forward --address 0.0.0.0 deployment/new-springboot-demo-spring-todo-app 31260:8080 &
+```
+
+- here's the toda-app runs like
+  
+  ![todo-app](./todo-app.png)
+
+
+- Develped by Pengchao Ma @2026.1.6
+
    
 
 
