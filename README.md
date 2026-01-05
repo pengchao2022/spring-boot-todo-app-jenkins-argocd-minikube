@@ -157,7 +157,16 @@ I will create all from the very beginning.
 
   ![email2](./email2.png)
 
-  
+## ArgoCD
+
+- You can use argocd cli or just use argocd UI to create the todo-app
+
+   - click "New App"
+
+   ![argo_app_create](./argo-app-create.png)
+
+   
+
 
 
 
