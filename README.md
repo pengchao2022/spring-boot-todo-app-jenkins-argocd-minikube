@@ -1,4 +1,4 @@
-# spring-boot-todo-app-jenkins-argocd-minikube
+# Spring-boot-todo-app-jenkins-argocd-minikube
 
 In this demo, I will use github and jenkins, argocd, minikube to deploy a spring-boot, maven project todo app, It's just a simple website with mysql database, All I want to do is to show you the CICD process.
 
@@ -45,11 +45,13 @@ I will create all from the very beginning.
 
 ## Code structure
 
-- src part
+- Src part
 
     - I will use spring boot java as backend and has the REST API for CRUD
 
     - I will use thymeleaf for forntend java template webpage
+
+- Argocd part
 
     - The argocd folder will have the application.yaml if you need to create the app using argocd CLI
 
@@ -108,8 +110,22 @@ I will create all from the very beginning.
                 - name: description
                 value: Spring Boot Todo Application with MySQL
      ```
+    - Charts part
+        
+        - In this folder i will create deployment.yaml including mysql and todo-app, service.yaml and values.yaml files
 
-     
+          Since this is not EKS, minikube is for a local environment i will not use ingress and alb services.
+
+## Jenkins CI 
+
+    - The jenkins will do the continuing intergration
+
+       - Here's the pipeline stage overview
+
+         ![jenkins_pipeline](./jenkins_pipeline.png)
+
+
+
 
 
 
