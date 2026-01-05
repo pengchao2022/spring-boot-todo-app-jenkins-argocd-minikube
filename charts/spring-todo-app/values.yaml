@@ -66,6 +66,11 @@ env:
 # MySQL Chart 配置
 mysql:
   enabled: true
+  image:
+    registry: docker.io
+    repository: bitnami/mysql
+    tag: 8.0.34-debian-11-r75  
+    pullPolicy: IfNotPresent
   auth:
     database: "todo_db"
     username: "todo_user"
