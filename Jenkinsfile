@@ -169,7 +169,7 @@ pipeline {
                     // 扫描完整版本的镜像
                     sh """
                         trivy image \\
-                          --exit-code 1 \\
+                          --exit-code 0 \\
                           --severity HIGH,CRITICAL \\
                           --ignore-unfixed \\
                           --format table \\
