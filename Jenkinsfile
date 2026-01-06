@@ -152,7 +152,7 @@ pipeline {
                         echo "  2. ${IMAGE_VERSION} (semantic version)"
                         echo "  3. ${IMAGE_LATEST} (latest)"
                         
-                        # 构建并标记多个标签
+                        # build and tag images
                         docker build -t ${IMAGE_FULL} .
                         docker tag ${IMAGE_FULL} ${IMAGE_VERSION}
                         docker tag ${IMAGE_FULL} ${IMAGE_LATEST}
@@ -190,7 +190,7 @@ pipeline {
                         echo "HIGH vulnerabilities: \$HIGH_COUNT"
                         echo "Total (HIGH+CRITICAL): \$TOTAL_VULNS"
                         
-                        # 保存统计信息到文件
+                        # save stats to file
                         echo "TRIVY_CRITICAL=\$CRITICAL_COUNT" > trivy-stats.txt
                         echo "TRIVY_HIGH=\$HIGH_COUNT" >> trivy-stats.txt
                         echo "TRIVY_TOTAL=\$TOTAL_VULNS" >> trivy-stats.txt
