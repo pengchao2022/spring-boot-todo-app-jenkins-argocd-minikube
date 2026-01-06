@@ -55,7 +55,7 @@ I will create all from the very beginning.
 
     - I will use spring boot java as backend and has the REST API for CRUD
 
-    - I will use thymeleaf for forntend java template webpage
+    - I will use thymeleaf for frontend java template webpage
 
 - Argocd part
 
@@ -108,7 +108,7 @@ I will create all from the very beginning.
                 kind: Deployment
                 jsonPointers:
                     - /spec/replicas
-                    
+
             info:
                 - name: description
                 value: Spring Boot Todo Application with MySQL
