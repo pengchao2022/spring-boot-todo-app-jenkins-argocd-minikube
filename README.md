@@ -230,7 +230,13 @@ I will create all from the very beginning.
        pullPolicy: Always
        tag: "1.0.0"  # you needs to change the latest to 1.0.0 and this is the stable version using for a Prod environment
   ```
-  - the same for a test or stage environment also
+  - If you don't want to create another path directory and you can also define different environment by different values.yaml files in your existed directory
+
+  - For example:
+
+    - values-dev.yaml   ---- image: "latest"
+    - values-prod.yaml  ---- image: "1.0.1"
+    - values-test.yaml  ---- image: "1.0.1.30
 
 
 
