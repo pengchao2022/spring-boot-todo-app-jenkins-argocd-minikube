@@ -153,6 +153,18 @@ I will create all from the very beginning.
 
   - 1.0.0.30	Build Number	The 30th build (specific version)
 
+- version control and tags classification
+
+   - Different tags represent different use cases, release stages, and governance strategies
+
+   - latest is most active and used for a development environment
+
+   - 1.0.0  is stable version used for a production environment
+
+   - 1.0.0.30 30 is the jenkins build number and is used for a test environment
+
+
+
 - I have also set up the email notification, When the jenkins finished the CI
   (since I don't have slack or sth then just use email instead)
 
