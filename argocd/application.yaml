@@ -35,19 +35,16 @@ spec:
         - name: image.tag
           value: "latest"  
   
-  
-  destination:
+    destination:
     server: https://kubernetes.default.svc 
     namespace: todo-app  
   
-  # health checks
   ignoreDifferences:
     - group: apps
       kind: Deployment
       jsonPointers:
         - /spec/replicas
-  
-  # resource limis
+
   info:
     - name: description
       value: Spring Boot Todo Application with MySQL
