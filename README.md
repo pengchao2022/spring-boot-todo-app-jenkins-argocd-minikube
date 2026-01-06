@@ -24,6 +24,8 @@ I will create all from the very beginning.
 
 - Helm charts --- manage the kubernetes apps package
 
+- Docker hub  ---- image registry
+
 - ...
 
 ## Infrastructure prepare
