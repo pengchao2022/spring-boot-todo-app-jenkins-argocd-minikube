@@ -209,6 +209,34 @@ I will create all from the very beginning.
   ![todo-app](./todo-app.png)
 
 
+## Multiple environment deployment
+
+- If you need to deploy different environments using Argocd for example, like dev, prod, stage... It's also easy to finish 
+
+  with the help of ArgoCD
+
+  - firstly created a new directory in your charts folder for example named charts/spring-todo-app-prod and copy the     
+  
+    existed charts, values, templates to this folder
+
+  - create a new App in argocd and select the path to "charts/spring-todo-app-prod"
+
+  - modify the image tags in values.yaml file
+
+  ```shell
+    
+     image:
+       repository: pengchaoma/springboot-todo-app
+       pullPolicy: Always
+       tag: "1.0.0"  # you needs to change the latest to 1.0.0 and this is the stable version using for a Prod environment
+  ```
+  - the same for a test or stage environment also
+
+
+
+- Thanks for Reading my demo 
+
+
 - Develped by Pengchao Ma @2026.1.6
 
    
