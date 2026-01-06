@@ -236,7 +236,7 @@ I will create all from the very beginning.
 
     - values-dev.yaml   ---- image: "latest"
     - values-prod.yaml  ---- image: "1.0.1"
-    - values-test.yaml  ---- image: "1.0.1.30
+    - values-test.yaml  ---- image: "1.0.1.30"
 
 
 
