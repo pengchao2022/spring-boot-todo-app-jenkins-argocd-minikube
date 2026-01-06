@@ -13,7 +13,10 @@ spec:
       prune: true  
       selfHeal: true 
     syncOptions:
-      - CreateNamespace=true  
+    - CreateNamespace=true  
+    - PruneLast=true           # first create new resources, then delete old ones
+    - ApplyOutOfSyncOnly=true  # sync only resources that are out-of-sync
+    - RespectIgnoreDifferences=true 
     
     retry:
       limit: 5

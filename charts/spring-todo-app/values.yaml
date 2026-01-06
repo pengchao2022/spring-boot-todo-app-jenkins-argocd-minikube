@@ -1,5 +1,9 @@
-# Spring Boot 应用配置
+# Spring Boot Todo Application Helm Chart - values.yaml
 replicaCount: 3
+# Rolling update deployment strategy settings
+deployment:
+  maxSurge: 1
+  maxUnavailable: 0
 
 image:
   repository: pengchaoma/springboot-todo-app
@@ -39,7 +43,7 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
-# 应用配置
+# Application specific configurations
 app:
   name: "spring-todo-app"
   port: 8080
@@ -50,7 +54,7 @@ app:
     username: "todo_user"
     password: "{{ .Values.mysql.auth.password }}"
 
-# MySQL Chart 配置
+# MySQL Chart configuration
 mysql:
   enabled: true
   architecture: standalone

@@ -7,6 +7,12 @@ metadata:
     release: "{{ .Release.Name }}"
 spec:
   replicas: {{ .Values.replicaCount }}
+  # This is the rolling update strategy
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: {{ .Values.deployment.maxSurge | default 1 }}
+      maxUnavailable: {{ .Values.deployment.maxUnavailable | default 0 }}
   selector:
     matchLabels:
       app: "{{ .Chart.Name }}"

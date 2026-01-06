@@ -78,6 +78,9 @@ I will create all from the very beginning.
                 selfHeal: true 
                 syncOptions:
                 - CreateNamespace=true  
+                - PruneLast=true           # first create new resources, then delete old ones
+                - ApplyOutOfSyncOnly=true  # sync only resources that are out-of-sync
+                - RespectIgnoreDifferences=true 
                 
                 retry:
                 limit: 5
@@ -87,9 +90,9 @@ I will create all from the very beginning.
                     maxDuration: 3m
 
             source:
-                repoURL: https://github.com/pengchao2022/spring-boot-todo-app-jenkins-argocd-minikube.git
-                targetRevision: HEAD  
-                path: charts/spring-todo-app  
+              repoURL: https://github.com/pengchao2022/spring-boot-todo-app-jenkins-argocd-minikube.git
+              targetRevision: HEAD  
+              path: charts/spring-todo-app  
                 
                 helm:
                 valueFiles:
@@ -100,8 +103,8 @@ I will create all from the very beginning.
                     value: "latest"  
         
             destination:
-                server: https://kubernetes.default.svc 
-                namespace: todo-app  
+              server: https://kubernetes.default.svc 
+              namespace: todo-app  
             
             ignoreDifferences:
                 - group: apps
