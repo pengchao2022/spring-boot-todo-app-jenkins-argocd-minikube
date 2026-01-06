@@ -186,7 +186,7 @@ I will create all from the very beginning.
 
    ![argo_app_create](./argo-app-create.png)
 
-- fill in the github repo and select the helm charts directoy
+- fill in the github repo and select the helm charts directory
 
    ![argo_URL](./argo_URL.png)
 
