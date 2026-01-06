@@ -98,20 +98,17 @@ I will create all from the very beginning.
                 parameters:
                     - name: image.tag
                     value: "latest"  
-            
-            
+        
             destination:
                 server: https://kubernetes.default.svc 
                 namespace: todo-app  
             
-            # health checks
             ignoreDifferences:
                 - group: apps
                 kind: Deployment
                 jsonPointers:
                     - /spec/replicas
-            
-            # resource limis
+                    
             info:
                 - name: description
                 value: Spring Boot Todo Application with MySQL
