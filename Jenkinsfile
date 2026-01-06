@@ -12,29 +12,29 @@ pipeline {
         DOCKER_HUB_CREDENTIALS = 'dockerhub-creds'
         IMAGE_NAME = 'springboot-todo-app'
         
-        // 语义化版本配置
+        // semantic version control,
         MAJOR_VERSION = '1'
         MINOR_VERSION = '0'
         PATCH_VERSION = '0' 
         
-        // 构建版本号
+        // build version
         BUILD_NUMBER_SUFFIX = "${BUILD_NUMBER}"
         
-        // 完整的版本标签
+        // full version tag
         VERSION_TAG = "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}.${BUILD_NUMBER_SUFFIX}"
         SHORT_VERSION_TAG = "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
         
-        // Docker 镜像标签
+        // Docker image tags
         IMAGE_FULL = "${DOCKER_HUB_USER}/${IMAGE_NAME}:${VERSION_TAG}"
         IMAGE_LATEST = "${DOCKER_HUB_USER}/${IMAGE_NAME}:latest"
         IMAGE_VERSION = "${DOCKER_HUB_USER}/${IMAGE_NAME}:${SHORT_VERSION_TAG}"
         
-        // SonarQube 配置
+        // SonarQube configuration
         SONAR_HOST_URL = 'http://sonarqube.awsmpc.asia:9000'
         SONAR_PROJECT_KEY = 'spring-boot-todo-app'
         SONAR_PROJECT_NAME = 'Spring Boot Todo Application'
         
-        // 邮件通知配置
+        // email notification
         EMAIL_RECIPIENTS = '18510656167@163.com'
         EMAIL_FROM = 'pengchao.ma6@gmail.com'
     }
@@ -49,7 +49,7 @@ pipeline {
         stage('Read Version from pom.xml') {
             steps {
                 script {
-                    // 从 pom.xml 读取版本号（如果项目有设置）
+                    // 从 pom.xml read version number
                     try {
                         def pom = readMavenPom file: 'pom.xml'
                         def projectVersion = pom.version
@@ -57,12 +57,12 @@ pipeline {
                         if (projectVersion && projectVersion.contains('.')) {
                             echo "Detected version from pom.xml: ${projectVersion}"
                             
-                            // 解析版本号
+                            // get major, minor, patch
                             def versionParts = projectVersion.tokenize('.')
                             if (versionParts.size() >= 3) {
                                 MAJOR_VERSION = versionParts[0]
                                 MINOR_VERSION = versionParts[1]
-                                PATCH_VERSION = versionParts[2].replaceAll('-.*', '')  // 移除快照后缀
+                                PATCH_VERSION = versionParts[2].replaceAll('-.*', '')  
                                 
                                 echo "Parsed version: ${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
                             }
@@ -71,7 +71,7 @@ pipeline {
                         echo "Could not read version from pom.xml, using defaults: ${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
                     }
                     
-                    // 更新环境变量
+                    // update environment variables
                     env.VERSION_TAG = "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}.${BUILD_NUMBER_SUFFIX}"
                     env.SHORT_VERSION_TAG = "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
                     env.IMAGE_FULL = "${DOCKER_HUB_USER}/${IMAGE_NAME}:${VERSION_TAG}"
@@ -170,7 +170,7 @@ pipeline {
                 script {
                     echo "=== Scanning Docker Image ${IMAGE_FULL} with Trivy ==="
                     
-                    // 扫描镜像并生成报告
+                    // scan image and generate report
                     sh """
                         trivy image \\
                           --exit-code 0 \\
@@ -180,7 +180,7 @@ pipeline {
                           --output trivy-report-${BUILD_NUMBER}.txt \\
                           ${IMAGE_FULL}
                         
-                        # 统计漏洞数量
+                        # count vulnerabilities
                         CRITICAL_COUNT=\$(grep -c "CRITICAL" trivy-report-${BUILD_NUMBER}.txt 2>/dev/null || echo "0")
                         HIGH_COUNT=\$(grep -c "HIGH" trivy-report-${BUILD_NUMBER}.txt 2>/dev/null || echo "0")
                         TOTAL_VULNS=\$((CRITICAL_COUNT + HIGH_COUNT))
@@ -196,7 +196,7 @@ pipeline {
                         echo "TRIVY_TOTAL=\$TOTAL_VULNS" >> trivy-stats.txt
                     """
                     
-                    // 读取统计信息到环境变量
+                    // output results to environment variables
                     def stats = readProperties file: 'trivy-stats.txt'
                     env.TRIVY_CRITICAL = stats.TRIVY_CRITICAL ?: "0"
                     env.TRIVY_HIGH = stats.TRIVY_HIGH ?: "0"
@@ -245,14 +245,14 @@ pipeline {
                     echo "Recipient: ${EMAIL_RECIPIENTS}"
                     echo "From: ${EMAIL_FROM}"
                     
-                    // 获取构建状态和信息
+                    // get build details
                     def buildStatus = currentBuild.result ?: 'SUCCESS'
                     def duration = currentBuild.durationString.replace(' and counting', '')
                     def trigger = currentBuild.getBuildCauses()[0]?.shortDescription ?: "Manual trigger"
                     def startTime = currentBuild.startTimeInMillis
                     def formattedTime = new Date(startTime).format("yyyy-MM-dd HH:mm:ss")
                     
-                    // 发送邮件通知
+                    // send email notification
                     emailext(
                         subject: "[Jenkins CI] Spring Boot Todo App - Build #${BUILD_NUMBER} - ${buildStatus}",
                         body: """
