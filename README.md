@@ -8,7 +8,7 @@ In this tutorial you will also have a small trip to know Cloud service(Alibaba c
 
 I will create all from the very beginning.
 
-## CI-CD Architeture
+## CI-CD Architecture
 
 ![cicd-architecture](./cicd_architecture.png)
 
@@ -179,7 +179,7 @@ I will create all from the very beginning.
 
    ![argo_URL](./argo_URL.png)
 
-- After few second you can see the app is ready
+- After few seconds you can see the app is ready
 
    ![app_ready](./app_ready.png)
 
@@ -193,7 +193,7 @@ I will create all from the very beginning.
    kubectl port-forward --address 0.0.0.0 deployment/new-springboot-demo-spring-todo-app 31260:8080 &
 ```
 
-- here's the toda-app runs like
+- here's the todo-app runs like
   
   ![todo-app](./todo-app.png)
 
