@@ -175,6 +175,11 @@ I will create all from the very beginning.
 
   ![email2](./email2.png)
 
+- the email content will also include the trivy vulnerabilities information
+
+  ![vulnerablities_email](./vulnerabilities.png)
+  
+
 ## ArgoCD
 
 - You can use argocd cli or just use argocd UI to create the todo-app
