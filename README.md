@@ -241,6 +241,30 @@ I will create all from the very beginning.
     - values-prod.yaml  ---- image: "1.0.1"
     - values-test.yaml  ---- image: "1.0.1.30"
 
+## Application upgrade or rollback
+
+- If you need to upgrade your application for example from app:1.0.1 to app:1.0.2 ,I have written the Continuous rolling  
+
+updates without traffic interruption
+```shell
+strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: {{ .Values.deployment.maxSurge | default 1 }}
+      maxUnavailable: {{ .Values.deployment.maxUnavailable | default 0 }}
+  
+```
+- when you change the image version in values.yaml from 1.0.1 to 1.0.2 and git a commit then push the code
+```shell
+image:
+  repository: pengchaoma/springboot-todo-app
+  pullPolicy: Always
+  tag: "1.0.2"
+```
+the argocd will automatically sync the change to k8s and new pods will be created in kubernetes automatically without 
+
+traffic interrupt
+
 
 
 - Thanks for Reading my demo 
