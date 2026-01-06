@@ -4,7 +4,7 @@ In this demo, I will use github and jenkins, argocd, minikube to deploy a spring
 
 Since my free AWS account has been expired, So I will install minikube instead of EKS on Alibaba Cloud ECS server
 
-In this tutorial you will also have a small trip to know Cloud service(Alibaba cloud), docker hub service,docker container services, Kubernetes(minikube), helm charts, sonarqube, database,trivy, public network, private network and DNS and image version control.
+In this tutorial you will also have a small trip to know Cloud service(Alibaba cloud), docker hub service,docker container services, Kubernetes(minikube), helm charts, sonarqube, database,trivy, public network, private network and DNS and image version control and governance strategies.
 
 I will create all from the very beginning.
 
