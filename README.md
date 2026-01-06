@@ -131,7 +131,7 @@ I will create all from the very beginning.
 
  ![sonarqube-scan](./sonar-qube-scan.png)
  
-- I installed trivy on jenkins-agent so that it can scan the image before I push to docker hub
+- I installed trivy on jenkins-agent so that it can scan the image vulnerabilities before I push to docker hub
 
   ![trivy](./trivy.png)
 
