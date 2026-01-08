@@ -162,6 +162,14 @@ I will create all from the very beginning.
   ```
   In this case, whenever High or critical vulnerabilities found, the CICD pipleline will be interrupted and you have to fix the issues before you can continue, a report will also been generated.
 
+- Image security Policy and Strategy
+
+  - production environment
+
+    - No Critical vulnerabilities 
+    - 1 High vulnerability requires assessment
+    - Medium and Low severity vulnerabilities pose relatively low risk in build images
+
 
 - I use the Semantic version control, you can see in my docker hub the image tags
 
