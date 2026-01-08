@@ -145,6 +145,23 @@ I will create all from the very beginning.
   ```
  ![trivy-result](./trivy-files.png)
 
+- For a CICD pipleline I'd like to highlight sth about trivy
+  when you set --exit-code = 0 like this :
+  ```shell
+  trivy image --exit-code 0 myimage:latest
+  ```
+  then whenever the images has vulnerabilities or not , the CICD piple line will continue, without failure
+  So In a Production or Development environment , we should define pipleline like this:
+  ```shell
+  trivy image \
+  --severity HIGH,CRITICAL \
+  --ignore-unfixed \
+  --format table \
+  --output trivy-report.txt \
+  myimage:latest
+  ```
+  In this case, whenever High or critical vulnerabilities found, the CICD pipleline will be interrupted and you have to fix the issues before you can continue, a report will also been generated.
+
 
 - I use the Semantic version control, you can see in my docker hub the image tags
 
