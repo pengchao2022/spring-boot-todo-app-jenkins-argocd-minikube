@@ -223,9 +223,9 @@ I will create all from the very beginning.
                     
                     // Check the condition
                     if (criticalCount == 0 && highCount == 1) {
-                        echo "✅ security passed：（CRITICAL=0，HIGH=1）"
+                        echo "security passed：（CRITICAL=0，HIGH=1）"
                     } else {
-                        error("❌ security failed：CRITICAL=${criticalCount}，HIGH=${highCount}。the security policy requires：CRITICAL=0，HIGH=1")
+                        error("security failed：CRITICAL=${criticalCount}，HIGH=${highCount}。the security policy requires：CRITICAL=0，HIGH=1")
                     }
                 }
             }
