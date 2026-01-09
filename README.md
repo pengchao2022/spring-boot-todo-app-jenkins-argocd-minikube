@@ -245,9 +245,9 @@ I will create all from the very beginning.
             archiveArtifacts artifacts: 'trivy-report.json', fingerprint: true
         }
     }
-}
+  }
+  ```
 
-```
 
 - Image security Policy and Strategy
 
