@@ -175,7 +175,7 @@ I will create all from the very beginning.
   we should write the jenkins pipleline with if else statement:
   ```shell
   pipeline {
-    agent any
+    
     
     tools {
         // make sure trivy and jq have been installed on the jenkins agent
