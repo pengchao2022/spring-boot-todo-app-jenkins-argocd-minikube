@@ -133,6 +133,15 @@ I will create all from the very beginning.
  - I use sonarqube to scan the code after maven compiled and here's the issues found
 
  ![sonarqube-scan](./sonar-qube-scan.png)
+
+- Install trivy and jq on jenkins-agent 
+  ```shell
+  docker exec -it jenkins-agent /bin/bash
+
+  sudo apt-get install -y trivy
+  sudo apt install -y jq
+
+  ```
  
 - I installed trivy on jenkins-agent so that it can scan the image vulnerabilities before I push to docker hub
 
@@ -162,12 +171,90 @@ I will create all from the very beginning.
   ```
   In this case, whenever High or critical vulnerabilities found, the CICD pipleline will be interrupted and you have to fix the issues before you can continue, a report will also been generated.
 
+- If we want to set the security policy to 0 Critical, 1 High then pipeline can be continued
+  we should write the jenkins pipleline with if else statement:
+  ```shell
+  pipeline {
+    agent any
+    
+    tools {
+        // make sure trivy and jq have been installed on the jenkins agent
+    }
+    
+    environment {
+        IMAGE_NAME = 'myimage:latest'
+    }
+    
+    stages {
+        stage('Trivy scan images') {
+            steps {
+                script {
+                    // run trivy and generate the json report
+                    sh '''
+                        trivy image \
+                            --severity HIGH,CRITICAL \
+                            --ignore-unfixed \
+                            --format json \
+                            --output trivy-report.json \
+                            ${IMAGE_NAME}
+                    '''
+                    
+                    // get the vulnerabilities from json
+                    def trivyReport = readJSON file: 'trivy-report.json'
+                    
+                    // count the number
+                    def criticalCount = 0
+                    def highCount = 0
+                    
+                    // Iterate through all results 
+                    trivyReport.Results?.each { result ->
+                        result.Vulnerabilities?.each { vuln ->
+                            if (vuln.Severity == "CRITICAL") {
+                                criticalCount++
+                            } else if (vuln.Severity == "HIGH") {
+                                highCount++
+                            }
+                        }
+                    }
+                    
+                    echo "security report："
+                    echo "  CRITICAL vulnerability number: ${criticalCount}"
+                    echo "  HIGH vulnerability number: ${highCount}"
+                    
+                    // 检查条件
+                    if (criticalCount == 0 && highCount == 1) {
+                        echo "✅ security passed：（CRITICAL=0，HIGH=1）"
+                    } else {
+                        error("❌ security failed：CRITICAL=${criticalCount}，HIGH=${highCount}。the security policy requires：CRITICAL=0，HIGH=1")
+                    }
+                }
+            }
+        }
+        
+        stage('next step') {
+            steps {
+                echo "security scan pssed, you can continue your next step"
+                // the follwoing step...
+            }
+        }
+    }
+    
+    post {
+        always {
+            // save the trivy-report.json file
+            archiveArtifacts artifacts: 'trivy-report.json', fingerprint: true
+        }
+    }
+}
+
+```
+
 - Image security Policy and Strategy
 
   - production environment
 
     - No Critical vulnerabilities 
-    - 1 High vulnerability requires assessment
+    - No High vulnerability requires assessment
     - Medium and Low severity vulnerabilities pose relatively low risk in build images
 
 
